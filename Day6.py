@@ -1,4 +1,6 @@
-# PROJECT 6 — SALES DATA ANALYZER
+# 
+
+
 # Concepts: Reading CSV, Basic Aggregation, Column Operations
 
 def read_csv(filename):
