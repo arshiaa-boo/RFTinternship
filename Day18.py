@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("Agg")  # Fix for Python 3.13 PNG backend error
+matplotlib.use("Agg") 
 
 import pandas as pd
 import numpy as np
