@@ -1,0 +1,53 @@
+============================================================
+        TRANSACTION DATA ANALYSIS REPORT
+============================================================
+
+Data source: transactions.csv
+Total transactions: 787
+Date range: 2024-01-01 to 2024-02-14
+High-value threshold: 8,000.00
+
+------------------------------------------------------------
+DUPLICATE TRANSACTIONS
+------------------------------------------------------------
+  Count: 24
+
+------------------------------------------------------------
+HIGH-VALUE TRANSACTIONS
+------------------------------------------------------------
+  Count: 16
+
+------------------------------------------------------------
+SUSPICIOUS ACCOUNTS (unusually frequent transactions)
+------------------------------------------------------------
+  Mean txns/account: 30.27 | Std: 8.97
+    ACC9999: 63 transactions
+
+------------------------------------------------------------
+RISK LEVEL BREAKDOWN
+------------------------------------------------------------
+    Low      779
+    Medium   8
+
+------------------------------------------------------------
+TOP 10 HIGHEST TRANSACTIONS
+------------------------------------------------------------
+    #707  ACC1000  24,207.94  (Healthcare)  risk=30
+    #709  ACC1001  23,993.00  (Entertainment)  risk=30
+    #704  ACC1024  23,138.66  (Dining)  risk=30
+    #701  ACC1009  21,843.28  (Transfer)  risk=30
+    #710  ACC1001  19,277.08  (Entertainment)  risk=30
+    #702  ACC1014  18,738.56  (Groceries)  risk=30
+    #706  ACC1018  16,977.60  (Transfer)  risk=30
+    #715  ACC1004  14,889.49  (Utilities)  risk=30
+    #708  ACC1012  13,435.17  (Transfer)  risk=30
+    #712  ACC1006  12,723.71  (Groceries)  risk=30
+
+------------------------------------------------------------
+FILES GENERATED
+------------------------------------------------------------
+  txn_report_output/transaction_category_chart.png
+  txn_report_output/daily_transaction_trend.png
+  txn_report_output/top10_highest_transactions.png
+  txn_report_output/suspicious_transactions.csv
+  txn_report_output/all_transactions_with_risk_scores.csv
