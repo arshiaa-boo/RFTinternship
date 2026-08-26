@@ -1,0 +1,50 @@
+=======================================================
+            WEATHER DATA ANALYSIS REPORT
+=======================================================
+
+Data source: weather_data.csv
+Total records: 150
+Cities covered: Bangalore, Chennai, Delhi, Kolkata, Mumbai
+Date range: 2024-01-01 to 2024-01-30
+
+-------------------------------------------------------
+AVERAGE TEMPERATURE PER CITY
+-------------------------------------------------------
+  Chennai          33.38 °C
+  Delhi            31.55 °C
+  Kolkata          30.36 °C
+  Mumbai           29.18 °C
+  Bangalore        23.73 °C
+
+-------------------------------------------------------
+HOTTEST & COLDEST CITY
+-------------------------------------------------------
+  🔥 Hottest: Chennai (33.38 °C)
+  ❄️  Coldest: Bangalore (23.73 °C)
+
+-------------------------------------------------------
+WEATHER CONDITION COUNTS
+-------------------------------------------------------
+  Rainy days: 51
+  Sunny days: 59
+  Other:      40
+
+    Sunny           59
+    Rainy           51
+    Cloudy          40
+
+-------------------------------------------------------
+BONUS: TOMORROW'S TEMPERATURE PREDICTION (3-day moving avg)
+-------------------------------------------------------
+  Bangalore       predicted ≈  24.30 °C
+  Chennai         predicted ≈  33.87 °C
+  Delhi           predicted ≈  31.53 °C
+  Kolkata         predicted ≈  31.00 °C
+  Mumbai          predicted ≈  28.27 °C
+
+-------------------------------------------------------
+CHARTS GENERATED
+-------------------------------------------------------
+  weather_report_output/temperature_trend.png
+  weather_report_output/weather_distribution.png
+  weather_report_output/avg_temperature_per_city.png
