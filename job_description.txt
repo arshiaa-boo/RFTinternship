@@ -1,0 +1,22 @@
+Job Title: Data Scientist / Python Developer
+
+We are looking for a skilled Python Developer with strong experience in
+data analysis and machine learning to join our team. The ideal candidate
+has hands-on experience with Python, SQL, pandas, and scikit-learn, and
+is comfortable building and deploying machine learning models to the
+cloud (AWS or Azure). Experience with data visualization tools such as
+Power BI or Tableau is a plus.
+
+Responsibilities:
+- Build and maintain data pipelines using Python and SQL.
+- Develop machine learning models for predictive analytics.
+- Collaborate with cross-functional teams using Agile/Scrum practices.
+- Deploy models to production using Docker and cloud services.
+
+Requirements:
+- Bachelor's degree in Computer Science, Statistics, or related field.
+- 2+ years of experience in Python development.
+- Strong knowledge of SQL and relational databases.
+- Experience with pandas, numpy, and scikit-learn.
+- Familiarity with AWS or Azure cloud platforms.
+- Good communication and teamwork skills.

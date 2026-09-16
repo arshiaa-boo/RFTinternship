@@ -1,0 +1,2 @@
+rank,name,email,phone,match_score,text_similarity_pct,skill_coverage_pct,experience_years,education,matched_skills,missing_skills,source_file
+1,Aisha Verma,aisha.verma@email.com,+91 98765 43210,75.45,50.9,100.0,4,Btech,"aws, machine learning, pandas, python, sql",,resume_1.txt

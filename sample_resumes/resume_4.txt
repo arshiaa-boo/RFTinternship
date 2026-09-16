@@ -1,0 +1,16 @@
+Priya Nair
+priya.nair@email.com | +91 90000 11122
+
+Summary:
+Python developer with 5 years of experience in backend development and
+data analysis.
+
+Skills: Python, SQL, Django, Flask, Pandas, Git, Linux, REST API
+
+Experience:
+- Backend Developer, CodeBase Inc (2019-Present) - 5 years of
+  experience building REST APIs with Django and Flask, writing complex
+  SQL queries, and analyzing data with pandas.
+
+Education:
+Master of Computer Applications, Bangalore University, 2018

@@ -1,0 +1,15 @@
+Rohan Mehta
+rohan.mehta@email.com | 9876543211
+
+Objective:
+Front-end developer with 3 years of experience looking to transition
+into full-stack roles.
+
+Skills: JavaScript, React, HTML, CSS, Node.js, Git, MongoDB
+
+Experience:
+- Front-End Developer, WebWorks (2021-Present) - 3 years of experience
+  building responsive UIs with React and JavaScript.
+
+Education:
+B.Sc in Information Technology, Mumbai University, 2020

@@ -1,0 +1,20 @@
+Aisha Verma
+aisha.verma@email.com | +91 98765 43210
+
+Summary:
+Data Scientist with 4 years of experience building machine learning
+models and data pipelines in Python.
+
+Skills: Python, SQL, Pandas, NumPy, Scikit-learn, TensorFlow, AWS,
+Docker, Power BI, Git
+
+Experience:
+- Data Scientist, TechCorp (2021-Present) - 4 years of experience
+  developing predictive models using Python and scikit-learn, deployed
+  on AWS using Docker containers. Built ETL pipelines with SQL and
+  pandas.
+- Data Analyst, DataSoft (2019-2021)
+  Created dashboards using Power BI, wrote SQL queries for reporting.
+
+Education:
+B.Tech in Computer Science, Delhi University, 2019
