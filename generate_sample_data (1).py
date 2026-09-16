@@ -1,133 +1,118 @@
+"""
+generate_sample_data.py
+------------------------
+Creates two sample CSVs so the Portfolio Analyzer can be tested
+immediately:
 
+    portfolio_holdings.csv  -> what you bought (symbol, sector, qty, buy price/date)
+    stock_prices.csv        -> daily closing price history for each symbol
+
+Run once:
+    python generate_sample_data.py
+"""
 
 import random
 import csv
 from datetime import datetime, timedelta
 
-random.seed(42)
+random.seed(7)
 
-USERNAMES = [
-    "@aisha_codes", "@rohan.tech", "@priya_designs", "@karan_vibes",
-    "@dev_naina", "@thefoodie_raj", "@travel_with_meera", "@fit_arjun",
-    "@musicby_sara", "@startup_vik", "@gamer_ananya", "@photo_kabir",
-    "@bookworm_ira", "@chef_ishaan", "@artsy_diya",
+STOCKS = [
+    {"symbol": "AAPL",  "company": "Apple Inc.",        "sector": "Technology",           "start_price": 190},
+    {"symbol": "MSFT",  "company": "Microsoft Corp.",    "sector": "Technology",           "start_price": 410},
+    {"symbol": "GOOGL", "company": "Alphabet Inc.",      "sector": "Technology",           "start_price": 165},
+    {"symbol": "NVDA",  "company": "NVIDIA Corp.",       "sector": "Technology",           "start_price": 120},
+    {"symbol": "AMZN",  "company": "Amazon.com Inc.",    "sector": "Consumer Discretionary", "start_price": 178},
+    {"symbol": "TSLA",  "company": "Tesla Inc.",         "sector": "Consumer Discretionary", "start_price": 240},
+    {"symbol": "META",  "company": "Meta Platforms",     "sector": "Communication Services", "start_price": 480},
+    {"symbol": "JPM",   "company": "JPMorgan Chase",     "sector": "Financials",           "start_price": 195},
+    {"symbol": "KO",    "company": "Coca-Cola Co.",      "sector": "Consumer Staples",      "start_price": 62},
+    {"symbol": "XOM",   "company": "Exxon Mobil Corp.",  "sector": "Energy",               "start_price": 112},
 ]
 
-HASHTAG_POOL = [
-    "#python", "#ai", "#machinelearning", "#coding", "#tech",
-    "#travel", "#foodie", "#fitness", "#motivation", "#music",
-    "#startup", "#gaming", "#photography", "#books", "#art",
-    "#datascience", "#webdev", "#opensource", "#productivity", "#news",
-]
-
-CATEGORIES = ["Technology", "Food", "Travel", "Fitness", "Entertainment",
-              "Business", "Lifestyle", "Sports"]
-
-CATEGORY_HASHTAGS = {
-    "Technology": ["#python", "#ai", "#machinelearning", "#coding", "#tech",
-                   "#datascience", "#webdev", "#opensource"],
-    "Food": ["#foodie"],
-    "Travel": ["#travel", "#photography"],
-    "Fitness": ["#fitness", "#motivation"],
-    "Entertainment": ["#music", "#gaming"],
-    "Business": ["#startup", "#productivity", "#news"],
-    "Lifestyle": ["#books", "#art", "#motivation"],
-    "Sports": ["#fitness", "#motivation"],
+NUM_DAYS = 120
+# Each stock gets a mild random drift (trend) plus daily noise, so some
+# clearly outperform and some clearly underperform - useful for best/worst.
+DRIFTS = {
+    "AAPL": 0.0010, "MSFT": 0.0014, "GOOGL": 0.0006, "NVDA": 0.0035,
+    "AMZN": 0.0008, "TSLA": -0.0015, "META": 0.0012, "JPM": 0.0004,
+    "KO": 0.0001, "XOM": -0.0006,
+}
+VOLATILITY = {
+    "AAPL": 0.014, "MSFT": 0.013, "GOOGL": 0.016, "NVDA": 0.030,
+    "AMZN": 0.018, "TSLA": 0.035, "META": 0.020, "JPM": 0.012,
+    "KO": 0.007, "XOM": 0.015,
 }
 
-POSITIVE_TEMPLATES = [
-    "Absolutely loving the new {topic} update, this is amazing! {tags}",
-    "Best {topic} experience ever, highly recommend it to everyone! {tags}",
-    "So excited to share this incredible {topic} milestone with you all {tags}",
-    "This {topic} community is so supportive and inspiring {tags}",
-    "Grateful for such a wonderful {topic} journey this year {tags}",
-]
-NEUTRAL_TEMPLATES = [
-    "Here's an update on my {topic} project, more details soon {tags}",
-    "Sharing some notes on {topic} today {tags}",
-    "A quick look at what I learned about {topic} this week {tags}",
-    "Working on a new {topic} post, stay tuned {tags}",
-    "Some thoughts on the current state of {topic} {tags}",
-]
-NEGATIVE_TEMPLATES = [
-    "Really frustrated with how this {topic} launch turned out {tags}",
-    "Disappointed by the recent {topic} changes, not a fan {tags}",
-    "This {topic} issue has been such a headache to deal with {tags}",
-    "Not happy with the {topic} experience today, needs work {tags}",
-    "Struggling with {topic} problems again, so annoying {tags}",
-]
 
-TOPICS = ["python", "AI", "travel", "food", "fitness", "startup", "music",
-          "gaming", "photography", "reading", "art", "productivity"]
+def generate_price_series(start_price, num_days, drift, volatility):
+    prices = [start_price]
+    for _ in range(num_days - 1):
+        change_pct = random.gauss(drift, volatility)
+        new_price = max(1.0, prices[-1] * (1 + change_pct))
+        prices.append(round(new_price, 2))
+    return prices
 
 
-def random_post(post_id, day):
-    username = random.choice(USERNAMES)
-    category = random.choice(CATEGORIES)
-    possible_tags = CATEGORY_HASHTAGS[category] + random.sample(HASHTAG_POOL, 2)
-    tags = random.sample(possible_tags, k=min(3, len(possible_tags)))
-    tag_str = " ".join(sorted(set(tags)))
+def generate_stock_prices(output_path="stock_prices.csv"):
+    start_date = datetime.now() - timedelta(days=NUM_DAYS)
+    dates = [start_date + timedelta(days=i) for i in range(NUM_DAYS)]
 
-    sentiment_bucket = random.choices(
-        ["pos", "neu", "neg"], weights=[0.45, 0.35, 0.20]
-    )[0]
-    template = random.choice(
-        {"pos": POSITIVE_TEMPLATES, "neu": NEUTRAL_TEMPLATES,
-         "neg": NEGATIVE_TEMPLATES}[sentiment_bucket]
-    )
-    content = template.format(topic=random.choice(TOPICS), tags=tag_str)
-
-    # Posting time skewed toward common social-media active hours
-    hour = random.choices(
-        population=list(range(24)),
-        weights=[1,1,1,1,1,2,3,4,5,6,7,8,9,8,7,6,7,8,9,10,9,7,4,2],
-    )[0]
-    minute = random.randint(0, 59)
-    post_datetime = day.replace(hour=hour, minute=minute)
-
-    likes = max(0, int(random.gauss(150, 120)))
-    comments = max(0, int(random.gauss(15, 12)))
-    shares = max(0, int(random.gauss(8, 7)))
-
-    # Popular categories/sentiment get a small engagement boost
-    if category == "Technology":
-        likes = int(likes * 1.3)
-    if sentiment_bucket == "pos":
-        likes = int(likes * 1.15)
-
-    return {
-        "post_id": post_id,
-        "username": username,
-        "date": post_datetime.strftime("%Y-%m-%d"),
-        "time": post_datetime.strftime("%H:%M"),
-        "content": content,
-        "hashtags": tag_str,
-        "likes": likes,
-        "comments": comments,
-        "shares": shares,
-        "category": category,
-    }
-
-
-def generate(num_posts=400, num_days=30, output_path="sample_posts.csv"):
-    start_date = datetime.now() - timedelta(days=num_days)
+    series_by_symbol = {}
     rows = []
-    for i in range(1, num_posts + 1):
-        day_offset = random.randint(0, num_days - 1)
-        day = start_date + timedelta(days=day_offset)
-        rows.append(random_post(i, day))
+    for stock in STOCKS:
+        series = generate_price_series(
+            stock["start_price"], NUM_DAYS,
+            DRIFTS[stock["symbol"]], VOLATILITY[stock["symbol"]],
+        )
+        series_by_symbol[stock["symbol"]] = series
+        for d, price in zip(dates, series):
+            rows.append({
+                "date": d.strftime("%Y-%m-%d"),
+                "symbol": stock["symbol"],
+                "close_price": price,
+            })
 
-    rows.sort(key=lambda r: (r["date"], r["time"]))
-
-    fieldnames = ["post_id", "username", "date", "time", "content",
-                  "hashtags", "likes", "comments", "shares", "category"]
     with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=["date", "symbol", "close_price"])
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"Generated {len(rows)} sample posts -> {output_path}")
+    print(f"Generated {len(rows)} price rows for {len(STOCKS)} stocks -> {output_path}")
+    return dates, series_by_symbol
+
+
+def generate_holdings(dates, series_by_symbol, output_path="portfolio_holdings.csv"):
+    """Pick a subset of stocks, buy them at some point in the past, using
+    the SAME price series already generated so buy_price is consistent
+    with stock_prices.csv."""
+    chosen = random.sample(STOCKS, k=8)
+    rows = []
+    for stock in chosen:
+        buy_day_index = random.randint(0, NUM_DAYS - 20)  # bought a while ago
+        buy_date = dates[buy_day_index]
+        buy_price = series_by_symbol[stock["symbol"]][buy_day_index]
+        quantity = random.randint(10, 80)
+
+        rows.append({
+            "symbol": stock["symbol"],
+            "company": stock["company"],
+            "sector": stock["sector"],
+            "quantity": quantity,
+            "buy_price": buy_price,
+            "buy_date": buy_date.strftime("%Y-%m-%d"),
+        })
+
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["symbol", "company", "sector", "quantity", "buy_price", "buy_date"]
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"Generated {len(rows)} holdings -> {output_path}")
 
 
 if __name__ == "__main__":
-    generate()
+    dates, series_by_symbol = generate_stock_prices()
+    generate_holdings(dates, series_by_symbol)

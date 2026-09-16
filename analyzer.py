@@ -1,162 +1,179 @@
 """
 analyzer.py
 -----------
-Core analytics engine for the Social Media Trend Analyzer.
+Core analytics engine for the Stock Market Portfolio Analyzer.
 
-All functions take a pandas DataFrame with (at minimum) these columns:
-    username, date, time, content, hashtags, likes, comments, shares, category
-
-and return summary DataFrames/dicts ready to chart or export.
+Expects two DataFrames:
+    holdings_df: symbol, company, sector, quantity, buy_price, buy_date
+    prices_df:   date, symbol, close_price   (daily history for each symbol)
 """
 
-import re
 import pandas as pd
 
-REQUIRED_COLUMNS = ["username", "date", "time", "content", "hashtags",
-                    "likes", "comments", "shares", "category"]
+HOLDINGS_COLUMNS = ["symbol", "company", "sector", "quantity", "buy_price", "buy_date"]
+PRICES_COLUMNS = ["date", "symbol", "close_price"]
 
 
-def load_posts(csv_path: str) -> pd.DataFrame:
+def load_holdings(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
-
-    missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
+    missing = [c for c in HOLDINGS_COLUMNS if c not in df.columns]
     if missing:
-        raise ValueError(
-            f"CSV is missing required column(s): {missing}. "
-            f"Expected columns: {REQUIRED_COLUMNS}"
-        )
-
-    # Combine date + time into a real datetime for time-based analysis
-    df["datetime"] = pd.to_datetime(
-        df["date"].astype(str) + " " + df["time"].astype(str),
-        errors="coerce",
-    )
-    df["hour"] = df["datetime"].dt.hour
-    df["day_of_week"] = df["datetime"].dt.day_name()
-
-    for col in ["likes", "comments", "shares"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
-
-    df["engagement"] = df["likes"] + df["comments"] + df["shares"]
+        raise ValueError(f"Holdings CSV missing column(s): {missing}. Expected: {HOLDINGS_COLUMNS}")
+    df["buy_date"] = pd.to_datetime(df["buy_date"], errors="coerce")
+    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
+    df["buy_price"] = pd.to_numeric(df["buy_price"], errors="coerce")
     return df
 
 
-def extract_hashtags(df: pd.DataFrame) -> pd.Series:
-    """Flatten the hashtags column (space or comma separated) into one
-    long Series of individual hashtags, also pulling any #tags out of
-    the free-text content in case they weren't listed separately."""
-    all_tags = []
-    for _, row in df.iterrows():
-        tags = set()
-        raw = str(row.get("hashtags", "") or "")
-        for piece in re.split(r"[,\s]+", raw):
-            piece = piece.strip()
-            if piece.startswith("#") and len(piece) > 1:
-                tags.add(piece.lower())
-        for tag in re.findall(r"#\w+", str(row.get("content", "") or "")):
-            tags.add(tag.lower())
-        all_tags.extend(tags)
-    return pd.Series(all_tags)
+def load_prices(csv_path: str) -> pd.DataFrame:
+    df = pd.read_csv(csv_path)
+    missing = [c for c in PRICES_COLUMNS if c not in df.columns]
+    if missing:
+        raise ValueError(f"Prices CSV missing column(s): {missing}. Expected: {PRICES_COLUMNS}")
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["close_price"] = pd.to_numeric(df["close_price"], errors="coerce")
+    return df.sort_values(["symbol", "date"]).reset_index(drop=True)
 
 
-def top_hashtags(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
-    tags = extract_hashtags(df)
-    if tags.empty:
-        return pd.DataFrame(columns=["hashtag", "count"])
-    counts = tags.value_counts().head(n)
-    return counts.rename_axis("hashtag").reset_index(name="count")
+def latest_prices(prices_df: pd.DataFrame) -> pd.Series:
+    """Most recent close price per symbol."""
+    idx = prices_df.groupby("symbol")["date"].idxmax()
+    latest = prices_df.loc[idx].set_index("symbol")["close_price"]
+    return latest
 
 
-def most_active_users(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
-    summary = (
-        df.groupby("username")
-        .agg(posts=("username", "count"),
-             total_engagement=("engagement", "sum"),
-             avg_engagement=("engagement", "mean"))
-        .sort_values("posts", ascending=False)
-        .head(n)
-        .reset_index()
-    )
-    summary["avg_engagement"] = summary["avg_engagement"].round(1)
-    return summary
+def profit_loss_table(holdings_df: pd.DataFrame, prices_df: pd.DataFrame) -> pd.DataFrame:
+    current = latest_prices(prices_df)
+    df = holdings_df.copy()
+    df["current_price"] = df["symbol"].map(current)
+    df["invested_amount"] = (df["quantity"] * df["buy_price"]).round(2)
+    df["current_value"] = (df["quantity"] * df["current_price"]).round(2)
+    df["profit_loss"] = (df["current_value"] - df["invested_amount"]).round(2)
+    df["return_pct"] = ((df["profit_loss"] / df["invested_amount"]) * 100).round(2)
+    return df.sort_values("return_pct", ascending=False).reset_index(drop=True)
 
 
-def engagement_summary(df: pd.DataFrame) -> dict:
+def best_worst_performers(pl_df: pd.DataFrame) -> dict:
+    if pl_df.empty:
+        return {"best": None, "worst": None}
+    best = pl_df.iloc[pl_df["return_pct"].idxmax()]
+    worst = pl_df.iloc[pl_df["return_pct"].idxmin()]
+    return {"best": best, "worst": worst}
+
+
+def overall_portfolio_return(pl_df: pd.DataFrame) -> dict:
+    total_invested = pl_df["invested_amount"].sum()
+    total_current = pl_df["current_value"].sum()
+    total_pl = total_current - total_invested
+    overall_return_pct = (total_pl / total_invested * 100) if total_invested else 0
     return {
-        "total_posts": len(df),
-        "total_likes": int(df["likes"].sum()),
-        "total_comments": int(df["comments"].sum()),
-        "total_shares": int(df["shares"].sum()),
-        "total_engagement": int(df["engagement"].sum()),
-        "avg_engagement_per_post": round(df["engagement"].mean(), 2) if len(df) else 0,
+        "total_invested": round(total_invested, 2),
+        "total_current_value": round(total_current, 2),
+        "total_profit_loss": round(total_pl, 2),
+        "overall_return_pct": round(overall_return_pct, 2),
     }
 
 
-def daily_engagement_trend(df: pd.DataFrame) -> pd.DataFrame:
-    daily = (
-        df.groupby(df["datetime"].dt.date)
-        .agg(likes=("likes", "sum"), comments=("comments", "sum"),
-             shares=("shares", "sum"), engagement=("engagement", "sum"),
-             posts=("engagement", "count"))
+def portfolio_growth_over_time(holdings_df: pd.DataFrame, prices_df: pd.DataFrame) -> pd.DataFrame:
+    """Total portfolio market value for each date, counting only shares
+    already owned by that date (i.e. after each holding's buy_date)."""
+    pivot = prices_df.pivot(index="date", columns="symbol", values="close_price").sort_index()
+    pivot = pivot.ffill()
+
+    total_value = pd.Series(0.0, index=pivot.index)
+    for _, h in holdings_df.iterrows():
+        if h["symbol"] not in pivot.columns:
+            continue
+        owned_mask = pivot.index >= h["buy_date"]
+        total_value.loc[owned_mask] += pivot.loc[owned_mask, h["symbol"]] * h["quantity"]
+
+    growth_df = total_value.reset_index()
+    growth_df.columns = ["date", "portfolio_value"]
+    # Only keep dates from the earliest buy onward (value is 0 before that)
+    growth_df = growth_df[growth_df["portfolio_value"] > 0].reset_index(drop=True)
+    return growth_df
+
+
+def daily_returns(growth_df: pd.DataFrame) -> pd.DataFrame:
+    df = growth_df.copy()
+    df["daily_return_pct"] = df["portfolio_value"].pct_change().mul(100).round(3)
+    return df.dropna().reset_index(drop=True)
+
+
+def sector_investment(pl_df: pd.DataFrame) -> pd.DataFrame:
+    summary = (
+        pl_df.groupby("sector")
+        .agg(invested_amount=("invested_amount", "sum"),
+             current_value=("current_value", "sum"),
+             profit_loss=("profit_loss", "sum"))
         .reset_index()
-        .rename(columns={"datetime": "date"})
+        .sort_values("current_value", ascending=False)
     )
-    return daily
+    summary[["invested_amount", "current_value", "profit_loss"]] = summary[
+        ["invested_amount", "current_value", "profit_loss"]
+    ].round(2)
+    return summary
 
 
-def content_category_distribution(df: pd.DataFrame) -> pd.DataFrame:
-    dist = (
-        df.groupby("category")
-        .agg(posts=("category", "count"), total_engagement=("engagement", "sum"))
-        .sort_values("posts", ascending=False)
-        .reset_index()
-    )
-    return dist
+def moving_average_prediction(prices_df: pd.DataFrame, symbol: str,
+                               short_window: int = 5, long_window: int = 20) -> dict:
+    """Simple trend signal: compare a short-term SMA to a long-term SMA.
+    Short MA above long MA => bullish (price likely to keep rising).
+    Short MA below long MA => bearish (price likely to keep falling).
+    This is a classic (and simple) technical-analysis heuristic, not a
+    guarantee -- real markets are far more complex."""
+    series = prices_df[prices_df["symbol"] == symbol].sort_values("date")["close_price"]
+    if len(series) < long_window:
+        return {"symbol": symbol, "signal": "Not enough data", "short_ma": None,
+                "long_ma": None, "last_price": series.iloc[-1] if len(series) else None}
+
+    short_ma = series.rolling(short_window).mean().iloc[-1]
+    long_ma = series.rolling(long_window).mean().iloc[-1]
+    last_price = series.iloc[-1]
+
+    diff_pct = ((short_ma - long_ma) / long_ma) * 100
+    if diff_pct > 0.5:
+        signal = "Uptrend (Bullish)"
+    elif diff_pct < -0.5:
+        signal = "Downtrend (Bearish)"
+    else:
+        signal = "Sideways / Neutral"
+
+    return {
+        "symbol": symbol,
+        "last_price": round(last_price, 2),
+        "short_ma": round(short_ma, 2),
+        "long_ma": round(long_ma, 2),
+        "signal": signal,
+        "signal_strength_pct": round(diff_pct, 2),
+    }
 
 
-def most_popular_posting_time(df: pd.DataFrame) -> pd.DataFrame:
-    """Average engagement by hour of day, to find the best time to post."""
-    by_hour = (
-        df.groupby("hour")
-        .agg(posts=("hour", "count"), avg_engagement=("engagement", "mean"))
-        .reset_index()
-        .sort_values("avg_engagement", ascending=False)
-    )
-    by_hour["avg_engagement"] = by_hour["avg_engagement"].round(1)
-    return by_hour
+def moving_average_predictions_for_portfolio(prices_df: pd.DataFrame, symbols,
+                                              short_window: int = 5, long_window: int = 20) -> pd.DataFrame:
+    rows = [moving_average_prediction(prices_df, s, short_window, long_window) for s in symbols]
+    return pd.DataFrame(rows)
 
 
-def build_full_report(df: pd.DataFrame, top_n_hashtags: int = 10,
-                       top_n_users: int = 10) -> pd.DataFrame:
+def build_full_report(pl_df: pd.DataFrame, overall: dict, sector_df: pd.DataFrame,
+                       ma_df: pd.DataFrame) -> pd.DataFrame:
     """Combine everything into one tidy report DataFrame for CSV export."""
     rows = []
 
-    summary = engagement_summary(df)
-    for key, val in summary.items():
-        rows.append({"section": "Overall Summary", "metric": key, "value": val})
+    for key, val in overall.items():
+        rows.append({"section": "Portfolio Summary", "metric": key, "value": val})
 
-    hashtags = top_hashtags(df, top_n_hashtags)
-    for _, r in hashtags.iterrows():
-        rows.append({"section": "Top Hashtags", "metric": r["hashtag"], "value": r["count"]})
+    for _, r in pl_df.iterrows():
+        rows.append({"section": "Per-Stock Profit/Loss", "metric": r["symbol"],
+                     "value": f"invested {r['invested_amount']}, current {r['current_value']}, "
+                              f"P/L {r['profit_loss']} ({r['return_pct']}%)"})
 
-    users = most_active_users(df, top_n_users)
-    for _, r in users.iterrows():
-        rows.append({"section": "Most Active Users", "metric": r["username"],
-                     "value": f"{r['posts']} posts, {int(r['total_engagement'])} total engagement"})
+    for _, r in sector_df.iterrows():
+        rows.append({"section": "Sector-wise Investment", "metric": r["sector"],
+                     "value": f"current value {r['current_value']}, P/L {r['profit_loss']}"})
 
-    categories = content_category_distribution(df)
-    for _, r in categories.iterrows():
-        rows.append({"section": "Category Distribution", "metric": r["category"],
-                     "value": f"{r['posts']} posts, {int(r['total_engagement'])} engagement"})
-
-    best_hours = most_popular_posting_time(df).head(5)
-    for _, r in best_hours.iterrows():
-        rows.append({"section": "Best Posting Hours", "metric": f"{int(r['hour']):02d}:00",
-                     "value": f"avg engagement {r['avg_engagement']}"})
-
-    if "sentiment" in df.columns:
-        sentiment_counts = df["sentiment"].value_counts()
-        for label, count in sentiment_counts.items():
-            rows.append({"section": "Sentiment Breakdown", "metric": label, "value": count})
+    for _, r in ma_df.iterrows():
+        rows.append({"section": "Moving Average Trend Prediction", "metric": r["symbol"],
+                     "value": r["signal"]})
 
     return pd.DataFrame(rows)

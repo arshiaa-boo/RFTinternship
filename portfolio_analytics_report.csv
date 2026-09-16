@@ -1,0 +1,26 @@
+section,metric,value
+Portfolio Summary,total_invested,64900.57
+Portfolio Summary,total_current_value,73298.3
+Portfolio Summary,total_profit_loss,8397.73
+Portfolio Summary,overall_return_pct,12.94
+Per-Stock Profit/Loss,META,"invested 19596.24, current 25674.12, P/L 6077.88 (31.02%)"
+Per-Stock Profit/Loss,AMZN,"invested 2245.6, current 2881.76, P/L 636.16 (28.33%)"
+Per-Stock Profit/Loss,MSFT,"invested 9104.76, current 10168.56, P/L 1063.8 (11.68%)"
+Per-Stock Profit/Loss,GOOGL,"invested 3607.17, current 4023.39, P/L 416.22 (11.54%)"
+Per-Stock Profit/Loss,AAPL,"invested 11167.52, current 12010.63, P/L 843.11 (7.55%)"
+Per-Stock Profit/Loss,JPM,"invested 9674.26, current 9861.48, P/L 187.22 (1.94%)"
+Per-Stock Profit/Loss,XOM,"invested 4793.72, current 4768.3, P/L -25.42 (-0.53%)"
+Per-Stock Profit/Loss,TSLA,"invested 4711.3, current 3910.06, P/L -801.24 (-17.01%)"
+Sector-wise Investment,Technology,"current value 26202.58, P/L 2323.13"
+Sector-wise Investment,Communication Services,"current value 25674.12, P/L 6077.88"
+Sector-wise Investment,Financials,"current value 9861.48, P/L 187.22"
+Sector-wise Investment,Consumer Discretionary,"current value 6791.82, P/L -165.08"
+Sector-wise Investment,Energy,"current value 4768.3, P/L -25.42"
+Moving Average Trend Prediction,MSFT,Sideways / Neutral
+Moving Average Trend Prediction,AAPL,Uptrend (Bullish)
+Moving Average Trend Prediction,XOM,Uptrend (Bullish)
+Moving Average Trend Prediction,META,Downtrend (Bearish)
+Moving Average Trend Prediction,AMZN,Downtrend (Bearish)
+Moving Average Trend Prediction,GOOGL,Uptrend (Bullish)
+Moving Average Trend Prediction,JPM,Sideways / Neutral
+Moving Average Trend Prediction,TSLA,Downtrend (Bearish)

@@ -1,0 +1,9 @@
+symbol,company,sector,quantity,buy_price,buy_date
+MSFT,Microsoft Corp.,Technology,18,505.82,2026-08-12
+AAPL,Apple Inc.,Technology,59,189.28,2026-08-23
+XOM,Exxon Mobil Corp.,Energy,41,116.92,2026-06-01
+META,Meta Platforms,Communication Services,36,544.34,2026-06-14
+AMZN,Amazon.com Inc.,Consumer Discretionary,14,160.4,2026-06-02
+GOOGL,Alphabet Inc.,Technology,21,171.77,2026-05-23
+JPM,JPMorgan Chase,Financials,46,210.31,2026-08-23
+TSLA,Tesla Inc.,Consumer Discretionary,22,214.15,2026-07-19
