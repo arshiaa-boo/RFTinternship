@@ -1,0 +1,43 @@
+section,metric,value
+Overall Summary,total_posts,400
+Overall Summary,total_likes,68776
+Overall Summary,total_comments,5819
+Overall Summary,total_shares,3102
+Overall Summary,total_engagement,77697
+Overall Summary,avg_engagement_per_post,194.24
+Top Hashtags,#motivation,124
+Top Hashtags,#fitness,108
+Top Hashtags,#foodie,70
+Top Hashtags,#startup,69
+Top Hashtags,#books,63
+Top Hashtags,#music,62
+Top Hashtags,#productivity,60
+Top Hashtags,#travel,59
+Top Hashtags,#gaming,57
+Top Hashtags,#art,56
+Most Active Users,@musicby_sara,"32 posts, 5620 total engagement"
+Most Active Users,@startup_vik,"32 posts, 6835 total engagement"
+Most Active Users,@aisha_codes,"31 posts, 6608 total engagement"
+Most Active Users,@bookworm_ira,"30 posts, 5942 total engagement"
+Most Active Users,@rohan.tech,"29 posts, 5200 total engagement"
+Most Active Users,@chef_ishaan,"28 posts, 5479 total engagement"
+Most Active Users,@artsy_diya,"28 posts, 6041 total engagement"
+Most Active Users,@fit_arjun,"28 posts, 6151 total engagement"
+Most Active Users,@thefoodie_raj,"27 posts, 5439 total engagement"
+Most Active Users,@gamer_ananya,"26 posts, 5641 total engagement"
+Category Distribution,Sports,"56 posts, 10461 engagement"
+Category Distribution,Entertainment,"55 posts, 12060 engagement"
+Category Distribution,Lifestyle,"52 posts, 9411 engagement"
+Category Distribution,Technology,"49 posts, 11824 engagement"
+Category Distribution,Food,"48 posts, 9156 engagement"
+Category Distribution,Business,"47 posts, 7992 engagement"
+Category Distribution,Travel,"47 posts, 8759 engagement"
+Category Distribution,Fitness,"46 posts, 8034 engagement"
+Best Posting Hours,09:00,avg engagement 240.1
+Best Posting Hours,23:00,avg engagement 240.0
+Best Posting Hours,06:00,avg engagement 238.6
+Best Posting Hours,13:00,avg engagement 233.8
+Best Posting Hours,21:00,avg engagement 222.5
+Sentiment Breakdown,Positive,258
+Sentiment Breakdown,Neutral,73
+Sentiment Breakdown,Negative,69

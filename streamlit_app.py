@@ -1,124 +1,204 @@
+"""
+streamlit_app.py
+-----------------
+Bonus challenge: an interactive Streamlit dashboard for the Social
+Media Trend Analyzer, with search + filters, live charts, and a
+downloadable analytics report.
 
+Run with:
+    streamlit run streamlit_app.py
+"""
 
 import streamlit as st
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
-from resume_parser import parse_resume_text
-from scorer import score_candidates
+from analyzer import (
+    load_posts, top_hashtags, most_active_users, engagement_summary,
+    daily_engagement_trend, content_category_distribution,
+    most_popular_posting_time, build_full_report,
+)
+from sentiment import add_sentiment_column
 
-st.set_page_config(page_title="AI Resume Screening Tool", layout="wide")
-
-st.title("🧠 AI Resume Screening Tool")
-st.caption("Upload resumes, paste a job description, and get a ranked, "
-           "explainable match score for every candidate.")
+st.set_page_config(page_title="Social Media Trend Analyzer", layout="wide")
+st.title("📱 Social Media Trend Analyzer")
+st.caption("Upload a post-level CSV (or use the bundled sample data) to "
+           "explore hashtags, active users, engagement trends, and sentiment.")
 
 # ---------------------------------------------------------------------
-# Sidebar: job description & scoring settings
+# Data source
 # ---------------------------------------------------------------------
 with st.sidebar:
-    st.header("⚙️ Job Setup")
-    job_description = st.text_area(
-        "Job Description", height=220,
-        placeholder="Paste the job description here...",
-    )
-    required_skills_raw = st.text_input(
-        "Required Skills (comma-separated)",
-        value="python, sql, pandas, scikit-learn, aws, machine learning",
-    )
-    min_experience = st.number_input(
-        "Minimum experience considered 'fully qualified' (years)",
-        min_value=0.0, value=2.0, step=0.5,
-    )
-    shortlist_threshold = st.slider(
-        "Shortlist threshold (match score)", 0, 100, 50,
-    )
-    st.markdown("---")
-    w_sim = st.slider("Weight: Text Similarity", 0.0, 1.0, 0.5, 0.05)
-    w_skill = st.slider("Weight: Skill Coverage", 0.0, 1.0, 0.4, 0.05)
-    w_exp = st.slider("Weight: Experience Fit", 0.0, 1.0, 0.1, 0.05)
+    st.header("📂 Data Source")
+    uploaded = st.file_uploader("Upload posts CSV", type=["csv"])
+    use_sample = st.checkbox("Use bundled sample_posts.csv", value=uploaded is None)
+
+if uploaded is not None:
+    df = load_posts(uploaded)
+elif use_sample:
+    df = load_posts("sample_posts.csv")
+else:
+    st.info("Upload a CSV or check 'Use bundled sample data' to get started.")
+    st.stop()
+
+with st.spinner("Running sentiment analysis..."):
+    df = add_sentiment_column(df, text_column="content")
 
 # ---------------------------------------------------------------------
-# Main: resume upload
+# Sidebar: search & filters
 # ---------------------------------------------------------------------
-uploaded_files = st.file_uploader(
-    "Upload resumes (.txt files, multiple allowed)",
-    type=["txt"], accept_multiple_files=True,
+with st.sidebar:
+    st.header("🔍 Search & Filters")
+    search_text = st.text_input("Search post content or hashtags")
+
+    all_categories = sorted(df["category"].dropna().unique().tolist())
+    selected_categories = st.multiselect("Category", all_categories, default=all_categories)
+
+    all_users = sorted(df["username"].dropna().unique().tolist())
+    selected_users = st.multiselect("Username", all_users, default=[])
+
+    sentiment_options = ["Positive", "Neutral", "Negative"]
+    selected_sentiments = st.multiselect("Sentiment", sentiment_options, default=sentiment_options)
+
+    min_date = df["datetime"].min().date()
+    max_date = df["datetime"].max().date()
+    date_range = st.date_input("Date range", value=(min_date, max_date),
+                                min_value=min_date, max_value=max_date)
+
+    top_n = st.slider("Top N (hashtags / users)", 5, 20, 10)
+
+# ---------------------------------------------------------------------
+# Apply filters
+# ---------------------------------------------------------------------
+filtered = df.copy()
+
+if search_text:
+    mask = (
+        filtered["content"].str.contains(search_text, case=False, na=False)
+        | filtered["hashtags"].str.contains(search_text, case=False, na=False)
+    )
+    filtered = filtered[mask]
+
+if selected_categories:
+    filtered = filtered[filtered["category"].isin(selected_categories)]
+
+if selected_users:
+    filtered = filtered[filtered["username"].isin(selected_users)]
+
+if selected_sentiments:
+    filtered = filtered[filtered["sentiment"].isin(selected_sentiments)]
+
+if isinstance(date_range, tuple) and len(date_range) == 2:
+    start, end = date_range
+    filtered = filtered[
+        (filtered["datetime"].dt.date >= start) & (filtered["datetime"].dt.date <= end)
+    ]
+
+if filtered.empty:
+    st.warning("No posts match the current filters. Try widening your search.")
+    st.stop()
+
+st.caption(f"Showing **{len(filtered)}** of {len(df)} posts after filters.")
+
+# ---------------------------------------------------------------------
+# Top metrics
+# ---------------------------------------------------------------------
+summary = engagement_summary(filtered)
+c1, c2, c3, c4, c5 = st.columns(5)
+c1.metric("Posts", summary["total_posts"])
+c2.metric("Total Likes", summary["total_likes"])
+c3.metric("Total Comments", summary["total_comments"])
+c4.metric("Total Shares", summary["total_shares"])
+c5.metric("Avg Engagement / Post", summary["avg_engagement_per_post"])
+
+st.markdown("---")
+
+# ---------------------------------------------------------------------
+# Charts row
+# ---------------------------------------------------------------------
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Top Trending Hashtags")
+    hashtags = top_hashtags(filtered, top_n)
+    if hashtags.empty:
+        st.info("No hashtags found in the filtered data.")
+    else:
+        fig, ax = plt.subplots(figsize=(6, 4.5))
+        ax.barh(hashtags["hashtag"][::-1], hashtags["count"][::-1], color="#4C72B0")
+        ax.set_xlabel("Number of Posts")
+        st.pyplot(fig)
+        plt.close(fig)
+
+with col2:
+    st.subheader("Content Category Distribution")
+    categories = content_category_distribution(filtered)
+    fig, ax = plt.subplots(figsize=(5.5, 4.5))
+    ax.pie(categories["posts"], labels=categories["category"], autopct="%1.1f%%",
+           startangle=90, colors=plt.cm.Set3.colors)
+    st.pyplot(fig)
+    plt.close(fig)
+
+st.subheader("Daily Engagement Trend")
+daily = daily_engagement_trend(filtered)
+fig, ax = plt.subplots(figsize=(11, 4))
+ax.plot(daily["date"], daily["likes"], marker="o", label="Likes")
+ax.plot(daily["date"], daily["comments"], marker="o", label="Comments")
+ax.plot(daily["date"], daily["shares"], marker="o", label="Shares")
+ax.set_xlabel("Date")
+ax.set_ylabel("Total Count")
+ax.legend()
+fig.autofmt_xdate()
+st.pyplot(fig)
+plt.close(fig)
+
+st.markdown("---")
+
+# ---------------------------------------------------------------------
+# Active users, posting time, sentiment
+# ---------------------------------------------------------------------
+col3, col4, col5 = st.columns(3)
+
+with col3:
+    st.subheader("👥 Most Active Users")
+    st.dataframe(most_active_users(filtered, top_n), use_container_width=True)
+
+with col4:
+    st.subheader("🕐 Best Posting Hours")
+    st.dataframe(most_popular_posting_time(filtered).head(top_n), use_container_width=True)
+
+with col5:
+    st.subheader("💬 Sentiment Breakdown")
+    sentiment_counts = filtered["sentiment"].value_counts()
+    fig, ax = plt.subplots(figsize=(4, 4))
+    colors = {"Positive": "#4CAF50", "Neutral": "#9E9E9E", "Negative": "#E53935"}
+    ax.pie(
+        sentiment_counts.values, labels=sentiment_counts.index, autopct="%1.1f%%",
+        colors=[colors.get(l, "#999") for l in sentiment_counts.index], startangle=90,
+    )
+    st.pyplot(fig)
+    plt.close(fig)
+
+st.markdown("---")
+
+# ---------------------------------------------------------------------
+# Filtered post table + report export
+# ---------------------------------------------------------------------
+st.subheader("📄 Filtered Posts")
+st.dataframe(
+    filtered[["post_id", "username", "date", "time", "content", "hashtags",
+              "likes", "comments", "shares", "category", "sentiment"]],
+    use_container_width=True,
 )
 
-run_button = st.button("🔍 Screen Resumes", type="primary")
+report_df = build_full_report(filtered, top_n_hashtags=top_n, top_n_users=top_n)
+report_csv = report_df.to_csv(index=False).encode("utf-8")
+posts_csv = filtered.drop(columns=["datetime"]).to_csv(index=False).encode("utf-8")
 
-if run_button:
-    if not uploaded_files:
-        st.warning("Please upload at least one resume (.txt).")
-    elif not job_description.strip():
-        st.warning("Please paste a job description in the sidebar.")
-    else:
-        resumes = []
-        for f in uploaded_files:
-            text = f.read().decode("utf-8", errors="ignore")
-            resumes.append(parse_resume_text(text, source_file=f.name))
-
-        required_skills = [s.strip() for s in required_skills_raw.split(",") if s.strip()]
-
-        total_w = w_sim + w_skill + w_exp
-        weights = {
-            "similarity": w_sim / total_w if total_w else 0.5,
-            "skills": w_skill / total_w if total_w else 0.4,
-            "experience": w_exp / total_w if total_w else 0.1,
-        }
-
-        results = score_candidates(
-            resumes=resumes,
-            job_description=job_description,
-            required_skills=required_skills,
-            min_experience_years=min_experience,
-            weights=weights,
-        )
-        df = pd.DataFrame(results)
-
-        st.success(f"Screened {len(df)} resume(s).")
-
-        # --- Leaderboard ---
-        st.subheader("🏆 Ranked Candidates")
-        display_df = df[[
-            "rank", "name", "match_score", "text_similarity_pct",
-            "skill_coverage_pct", "experience_years", "education",
-            "matched_skills", "missing_skills", "source_file",
-        ]]
-        st.dataframe(
-            display_df.style.background_gradient(subset=["match_score"], cmap="Greens"),
-            use_container_width=True,
-        )
-
-        # --- Per-candidate detail cards ---
-        st.subheader("📋 Candidate Details")
-        for _, row in df.iterrows():
-            with st.expander(f"#{row['rank']} — {row['name']} ({row['match_score']}%)"):
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Match Score", f"{row['match_score']}%")
-                c2.metric("Skill Coverage", f"{row['skill_coverage_pct']}%")
-                c3.metric("Experience", f"{row['experience_years']} yrs")
-                st.write(f"**Email:** {row['email']}  |  **Phone:** {row['phone']}")
-                st.write(f"**Education:** {row['education']}")
-                st.write(f"✅ **Matched skills:** {row['matched_skills'] or '—'}")
-                if row["missing_skills"]:
-                    st.warning(f"⚠️ **Missing skills:** {row['missing_skills']}")
-                else:
-                    st.info("No required skills missing.")
-
-        # --- Shortlist + export ---
-        shortlisted = df[df["match_score"] >= shortlist_threshold]
-        st.subheader(f"✅ Shortlisted Candidates (score ≥ {shortlist_threshold})")
-        st.dataframe(shortlisted[display_df.columns], use_container_width=True)
-
-        csv_bytes = shortlisted[display_df.columns].to_csv(index=False).encode("utf-8")
-        st.download_button(
-            "⬇️ Download Shortlisted Candidates (CSV)",
-            data=csv_bytes,
-            file_name="shortlisted_candidates.csv",
-            mime="text/csv",
-        )
-else:
-    st.info("Upload resumes and click **Screen Resumes** to get started. "
-            "Sample .txt resumes are included in the `sample_resumes/` folder "
-            "if you want to try it immediately.")
+dl1, dl2 = st.columns(2)
+dl1.download_button("⬇️ Download Analytics Report (CSV)", data=report_csv,
+                     file_name="analytics_report.csv", mime="text/csv")
+dl2.download_button("⬇️ Download Filtered Posts (CSV)", data=posts_csv,
+                     file_name="filtered_posts.csv", mime="text/csv")
