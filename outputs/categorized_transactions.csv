@@ -1,0 +1,64 @@
+date,description,amount,month,category,type
+2026-06-02,Big Bazaar Grocery,-2552.09,2026-06,Groceries,Expense
+2026-06-03,Monthly Salary,65000.0,2026-06,Income,Income
+2026-06-04,Uber Ride,-321.03,2026-06,Transport,Expense
+2026-06-05,Netflix Subscription,-506.27,2026-06,Entertainment,Expense
+2026-06-06,Electricity Bill BSES,-1898.13,2026-06,Utilities,Expense
+2026-06-07,Zomato Order,-538.39,2026-06,Food & Dining,Expense
+2026-06-08,Amazon Shopping,-3168.76,2026-06,Shopping,Expense
+2026-06-09,Apollo Pharmacy,-684.17,2026-06,Health & Fitness,Expense
+2026-06-10,Movie Tickets PVR,-910.73,2026-06,Entertainment,Expense
+2026-06-11,Rent Payment,-14836.95,2026-06,Rent,Expense
+2026-06-12,Swiggy Order,-410.7,2026-06,Food & Dining,Expense
+2026-06-13,Gym Membership,-1432.92,2026-06,Health & Fitness,Expense
+2026-06-14,Mobile Recharge Jio,-621.58,2026-06,Utilities,Expense
+2026-06-15,Petrol Pump,-1994.73,2026-06,Transport,Expense
+2026-06-16,Big Bazaar Grocery,-2039.94,2026-06,Groceries,Expense
+2026-06-17,Spotify Subscription,-122.37,2026-06,Entertainment,Expense
+2026-06-18,Ola Ride,-278.56,2026-06,Transport,Expense
+2026-06-19,Water Bill,-460.75,2026-06,Utilities,Expense
+2026-06-20,Flipkart Shopping,-2156.8,2026-06,Shopping,Expense
+2026-06-21,Restaurant Dinner,-1682.8,2026-06,Food & Dining,Expense
+2026-06-22,Internet Bill Airtel,-985.78,2026-06,Utilities,Expense
+2026-07-02,Big Bazaar Grocery,-2511.67,2026-07,Groceries,Expense
+2026-07-03,Monthly Salary,65000.0,2026-07,Income,Income
+2026-07-04,Uber Ride,-351.85,2026-07,Transport,Expense
+2026-07-05,Netflix Subscription,-545.06,2026-07,Entertainment,Expense
+2026-07-06,Electricity Bill BSES,-1901.46,2026-07,Utilities,Expense
+2026-07-07,Zomato Order,-556.37,2026-07,Food & Dining,Expense
+2026-07-08,Amazon Shopping,-3273.51,2026-07,Shopping,Expense
+2026-07-09,Apollo Pharmacy,-713.0,2026-07,Health & Fitness,Expense
+2026-07-10,Movie Tickets PVR,-928.67,2026-07,Entertainment,Expense
+2026-07-11,Rent Payment,-15244.77,2026-07,Rent,Expense
+2026-07-12,Swiggy Order,-419.77,2026-07,Food & Dining,Expense
+2026-07-13,Gym Membership,-1580.12,2026-07,Health & Fitness,Expense
+2026-07-14,Mobile Recharge Jio,-609.92,2026-07,Utilities,Expense
+2026-07-15,Petrol Pump,-2120.54,2026-07,Transport,Expense
+2026-07-16,Big Bazaar Grocery,-2112.77,2026-07,Groceries,Expense
+2026-07-17,Spotify Subscription,-127.9,2026-07,Entertainment,Expense
+2026-07-18,Ola Ride,-296.78,2026-07,Transport,Expense
+2026-07-19,Water Bill,-462.19,2026-07,Utilities,Expense
+2026-07-20,Flipkart Shopping,-2154.76,2026-07,Shopping,Expense
+2026-07-21,Restaurant Dinner,-1710.2,2026-07,Food & Dining,Expense
+2026-07-22,Internet Bill Airtel,-1093.86,2026-07,Utilities,Expense
+2026-08-02,Big Bazaar Grocery,-2637.45,2026-08,Groceries,Expense
+2026-08-03,Monthly Salary,65000.0,2026-08,Income,Income
+2026-08-04,Uber Ride,-365.37,2026-08,Transport,Expense
+2026-08-05,Netflix Subscription,-582.35,2026-08,Entertainment,Expense
+2026-08-06,Electricity Bill BSES,-2097.96,2026-08,Utilities,Expense
+2026-08-07,Zomato Order,-599.02,2026-08,Food & Dining,Expense
+2026-08-08,Amazon Shopping,-3672.93,2026-08,Shopping,Expense
+2026-08-09,Apollo Pharmacy,-736.98,2026-08,Health & Fitness,Expense
+2026-08-10,Movie Tickets PVR,-1003.87,2026-08,Entertainment,Expense
+2026-08-11,Rent Payment,-16476.91,2026-08,Rent,Expense
+2026-08-12,Swiggy Order,-463.45,2026-08,Food & Dining,Expense
+2026-08-13,Gym Membership,-1699.73,2026-08,Health & Fitness,Expense
+2026-08-14,Mobile Recharge Jio,-658.36,2026-08,Utilities,Expense
+2026-08-15,Petrol Pump,-2144.1,2026-08,Transport,Expense
+2026-08-16,Big Bazaar Grocery,-2276.8,2026-08,Groceries,Expense
+2026-08-17,Spotify Subscription,-133.36,2026-08,Entertainment,Expense
+2026-08-18,Ola Ride,-306.96,2026-08,Transport,Expense
+2026-08-19,Water Bill,-492.53,2026-08,Utilities,Expense
+2026-08-20,Flipkart Shopping,-2315.84,2026-08,Shopping,Expense
+2026-08-21,Restaurant Dinner,-1781.54,2026-08,Food & Dining,Expense
+2026-08-22,Internet Bill Airtel,-1141.64,2026-08,Utilities,Expense

@@ -1,0 +1,40 @@
+============================================================
+  SMART EXPENSE TRACKER — BUDGET REPORT
+  Generated: 2026-09-16 22:52
+============================================================
+
+MONTHLY SUMMARY
+------------------------------------------------------------
+2026-06: Income Rs65,000 | Expenses Rs37,603 | Savings Rs27,397 (42.1%)
+2026-07: Income Rs65,000 | Expenses Rs38,715 | Savings Rs26,285 (40.4%)
+2026-08: Income Rs65,000 | Expenses Rs41,587 | Savings Rs23,413 (36.0%)
+
+Average savings rate: 39.5%
+
+BUDGET vs ACTUAL (average monthly)
+------------------------------------------------------------
+[OVER] Rent               spent Rs  15,520 / budget Rs  15,000  (Over Budget)
+[OVER] Shopping           spent Rs   5,581 / budget Rs   4,000  (Over Budget)
+[OK]   Groceries          spent Rs   4,710 / budget Rs   6,000  (Within Budget)
+[OVER] Utilities          spent Rs   4,141 / budget Rs   3,500  (Over Budget)
+[OVER] Transport          spent Rs   2,727 / budget Rs     800  (Over Budget)
+[OVER] Food & Dining      spent Rs   2,721 / budget Rs   1,800  (Over Budget)
+[OVER] Health & Fitness   spent Rs   2,282 / budget Rs   1,200  (Over Budget)
+[OVER] Entertainment      spent Rs   1,620 / budget Rs     700  (Over Budget)
+
+Over budget in: Rent, Shopping, Utilities, Transport, Food & Dining, Health & Fitness, Entertainment
+
+PREDICTED SPEND — NEXT MONTH
+------------------------------------------------------------
+Rent               Rs    17,160
+Shopping           Rs     6,244
+Groceries          Rs     5,032
+Utilities          Rs     4,566
+Transport          Rs     2,949
+Food & Dining      Rs     2,933
+Health & Fitness   Rs     2,602
+Entertainment      Rs     1,800
+
+Predicted TOTAL next month: Rs43,286
+
+============================================================

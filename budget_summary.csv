@@ -1,0 +1,9 @@
+category,total_spent,avg_monthly_spent,monthly_budget,status,variance
+Rent,45000.0,15000.0,15000,Within Budget,0.0
+Shopping,19700.0,6566.67,4000,Over Budget,-2566.67
+Groceries,14130.0,4710.0,6000,Within Budget,1290.0
+Utilities,12494.0,4164.67,3500,Over Budget,-664.67
+Food & Dining,9110.0,3036.67,1800,Over Budget,-1236.67
+Transport,8560.5,2853.5,800,Over Budget,-2053.5
+Health & Fitness,6040.0,2013.33,1200,Over Budget,-813.33
+Entertainment,4804.0,1601.33,700,Over Budget,-901.33
