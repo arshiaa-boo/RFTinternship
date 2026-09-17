@@ -1,118 +1,82 @@
-"""
-generate_sample_data.py
-------------------------
-Creates two sample CSVs so the Portfolio Analyzer can be tested
-immediately:
 
-    portfolio_holdings.csv  -> what you bought (symbol, sector, qty, buy price/date)
-    stock_prices.csv        -> daily closing price history for each symbol
 
-Run once:
-    python generate_sample_data.py
-"""
-
-import random
 import csv
-from datetime import datetime, timedelta
+import random
+from datetime import date, timedelta
 
-random.seed(7)
+OUTPUT_FILE = "sample_invoices.csv"
 
-STOCKS = [
-    {"symbol": "AAPL",  "company": "Apple Inc.",        "sector": "Technology",           "start_price": 190},
-    {"symbol": "MSFT",  "company": "Microsoft Corp.",    "sector": "Technology",           "start_price": 410},
-    {"symbol": "GOOGL", "company": "Alphabet Inc.",      "sector": "Technology",           "start_price": 165},
-    {"symbol": "NVDA",  "company": "NVIDIA Corp.",       "sector": "Technology",           "start_price": 120},
-    {"symbol": "AMZN",  "company": "Amazon.com Inc.",    "sector": "Consumer Discretionary", "start_price": 178},
-    {"symbol": "TSLA",  "company": "Tesla Inc.",         "sector": "Consumer Discretionary", "start_price": 240},
-    {"symbol": "META",  "company": "Meta Platforms",     "sector": "Communication Services", "start_price": 480},
-    {"symbol": "JPM",   "company": "JPMorgan Chase",     "sector": "Financials",           "start_price": 195},
-    {"symbol": "KO",    "company": "Coca-Cola Co.",      "sector": "Consumer Staples",      "start_price": 62},
-    {"symbol": "XOM",   "company": "Exxon Mobil Corp.",  "sector": "Energy",               "start_price": 112},
+CUSTOMERS = [
+    ("Acme Corp", "billing@acme.com"),
+    ("Globex Inc", "ap@globex.com"),
+    ("Initech", "finance@initech.com"),
+    ("Umbrella Co", "accounts@umbrella.com"),
+    ("Wayne Enterprises", "payables@wayne.com"),
+    ("Stark Industries", "ap@stark.com"),
 ]
 
-NUM_DAYS = 120
-# Each stock gets a mild random drift (trend) plus daily noise, so some
-# clearly outperform and some clearly underperform - useful for best/worst.
-DRIFTS = {
-    "AAPL": 0.0010, "MSFT": 0.0014, "GOOGL": 0.0006, "NVDA": 0.0035,
-    "AMZN": 0.0008, "TSLA": -0.0015, "META": 0.0012, "JPM": 0.0004,
-    "KO": 0.0001, "XOM": -0.0006,
-}
-VOLATILITY = {
-    "AAPL": 0.014, "MSFT": 0.013, "GOOGL": 0.016, "NVDA": 0.030,
-    "AMZN": 0.018, "TSLA": 0.035, "META": 0.020, "JPM": 0.012,
-    "KO": 0.007, "XOM": 0.015,
-}
+ITEMS = [
+    ("Web Design Services", 150.00),
+    ("Cloud Hosting (Monthly)", 45.00),
+    ("Logo Design", 300.00),
+    ("SEO Consultation", 120.00),
+    ("Software License", 500.00),
+    ("Technical Support (hrs)", 75.00),
+    ("Domain Registration", 15.00),
+    ("Content Writing", 60.00),
+]
+
+STATUSES = ["Paid", "Pending", "Pending", "Paid"]  # weighted
 
 
-def generate_price_series(start_price, num_days, drift, volatility):
-    prices = [start_price]
-    for _ in range(num_days - 1):
-        change_pct = random.gauss(drift, volatility)
-        new_price = max(1.0, prices[-1] * (1 + change_pct))
-        prices.append(round(new_price, 2))
-    return prices
-
-
-def generate_stock_prices(output_path="stock_prices.csv"):
-    start_date = datetime.now() - timedelta(days=NUM_DAYS)
-    dates = [start_date + timedelta(days=i) for i in range(NUM_DAYS)]
-
-    series_by_symbol = {}
+def generate_rows(num_invoices=15):
     rows = []
-    for stock in STOCKS:
-        series = generate_price_series(
-            stock["start_price"], NUM_DAYS,
-            DRIFTS[stock["symbol"]], VOLATILITY[stock["symbol"]],
-        )
-        series_by_symbol[stock["symbol"]] = series
-        for d, price in zip(dates, series):
+    today = date.today()
+
+    for i in range(1, num_invoices + 1):
+        inv_no = f"INV-{2026}{i:04d}"
+        customer_name, customer_email = random.choice(CUSTOMERS)
+
+        # Spread invoice dates over the last ~60 days
+        inv_date = today - timedelta(days=random.randint(1, 60))
+        # Payment terms: due 15 or 30 days after invoice date
+        due_date = inv_date + timedelta(days=random.choice([15, 30]))
+        status = random.choice(STATUSES)
+
+        num_items = random.randint(1, 3)
+        chosen_items = random.sample(ITEMS, num_items)
+
+        for desc, price in chosen_items:
+            qty = random.randint(1, 4)
             rows.append({
-                "date": d.strftime("%Y-%m-%d"),
-                "symbol": stock["symbol"],
-                "close_price": price,
+                "invoice_number": inv_no,
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "invoice_date": inv_date.strftime("%Y-%m-%d"),
+                "due_date": due_date.strftime("%Y-%m-%d"),
+                "item_description": desc,
+                "quantity": qty,
+                "unit_price": price,
+                "status": status,
             })
 
-    with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["date", "symbol", "close_price"])
+    return rows
+
+
+def main():
+    rows = generate_rows()
+    fieldnames = [
+        "invoice_number", "customer_name", "customer_email",
+        "invoice_date", "due_date", "item_description",
+        "quantity", "unit_price", "status",
+    ]
+    with open(OUTPUT_FILE, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"Generated {len(rows)} price rows for {len(STOCKS)} stocks -> {output_path}")
-    return dates, series_by_symbol
-
-
-def generate_holdings(dates, series_by_symbol, output_path="portfolio_holdings.csv"):
-    """Pick a subset of stocks, buy them at some point in the past, using
-    the SAME price series already generated so buy_price is consistent
-    with stock_prices.csv."""
-    chosen = random.sample(STOCKS, k=8)
-    rows = []
-    for stock in chosen:
-        buy_day_index = random.randint(0, NUM_DAYS - 20)  # bought a while ago
-        buy_date = dates[buy_day_index]
-        buy_price = series_by_symbol[stock["symbol"]][buy_day_index]
-        quantity = random.randint(10, 80)
-
-        rows.append({
-            "symbol": stock["symbol"],
-            "company": stock["company"],
-            "sector": stock["sector"],
-            "quantity": quantity,
-            "buy_price": buy_price,
-            "buy_date": buy_date.strftime("%Y-%m-%d"),
-        })
-
-    with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(
-            f, fieldnames=["symbol", "company", "sector", "quantity", "buy_price", "buy_date"]
-        )
-        writer.writeheader()
-        writer.writerows(rows)
-
-    print(f"Generated {len(rows)} holdings -> {output_path}")
+    print(f"Sample data written to {OUTPUT_FILE} ({len(rows)} line items).")
 
 
 if __name__ == "__main__":
-    dates, series_by_symbol = generate_stock_prices()
-    generate_holdings(dates, series_by_symbol)
+    main()

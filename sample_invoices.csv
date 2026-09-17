@@ -1,0 +1,34 @@
+invoice_number,customer_name,customer_email,invoice_date,due_date,item_description,quantity,unit_price,status
+INV-20260001,Stark Industries,ap@stark.com,2026-08-16,2026-09-15,Content Writing,3,60.0,Paid
+INV-20260001,Stark Industries,ap@stark.com,2026-08-16,2026-09-15,Technical Support (hrs),1,75.0,Paid
+INV-20260001,Stark Industries,ap@stark.com,2026-08-16,2026-09-15,Domain Registration,1,15.0,Paid
+INV-20260002,Initech,finance@initech.com,2026-08-28,2026-09-27,Cloud Hosting (Monthly),2,45.0,Paid
+INV-20260002,Initech,finance@initech.com,2026-08-28,2026-09-27,Technical Support (hrs),2,75.0,Paid
+INV-20260002,Initech,finance@initech.com,2026-08-28,2026-09-27,Content Writing,1,60.0,Paid
+INV-20260003,Globex Inc,ap@globex.com,2026-09-03,2026-10-03,Web Design Services,3,150.0,Paid
+INV-20260004,Globex Inc,ap@globex.com,2026-08-12,2026-08-27,Technical Support (hrs),3,75.0,Pending
+INV-20260004,Globex Inc,ap@globex.com,2026-08-12,2026-08-27,Software License,2,500.0,Pending
+INV-20260004,Globex Inc,ap@globex.com,2026-08-12,2026-08-27,Cloud Hosting (Monthly),3,45.0,Pending
+INV-20260005,Wayne Enterprises,payables@wayne.com,2026-08-23,2026-09-22,Logo Design,4,300.0,Pending
+INV-20260006,Wayne Enterprises,payables@wayne.com,2026-09-14,2026-10-14,SEO Consultation,2,120.0,Pending
+INV-20260006,Wayne Enterprises,payables@wayne.com,2026-09-14,2026-10-14,Logo Design,3,300.0,Pending
+INV-20260006,Wayne Enterprises,payables@wayne.com,2026-09-14,2026-10-14,Cloud Hosting (Monthly),3,45.0,Pending
+INV-20260007,Wayne Enterprises,payables@wayne.com,2026-08-05,2026-09-04,Logo Design,1,300.0,Pending
+INV-20260007,Wayne Enterprises,payables@wayne.com,2026-08-05,2026-09-04,Domain Registration,4,15.0,Pending
+INV-20260008,Umbrella Co,accounts@umbrella.com,2026-09-06,2026-10-06,Web Design Services,2,150.0,Pending
+INV-20260008,Umbrella Co,accounts@umbrella.com,2026-09-06,2026-10-06,Software License,1,500.0,Pending
+INV-20260008,Umbrella Co,accounts@umbrella.com,2026-09-06,2026-10-06,Content Writing,4,60.0,Pending
+INV-20260009,Acme Corp,billing@acme.com,2026-07-30,2026-08-29,SEO Consultation,2,120.0,Paid
+INV-20260009,Acme Corp,billing@acme.com,2026-07-30,2026-08-29,Cloud Hosting (Monthly),1,45.0,Paid
+INV-20260009,Acme Corp,billing@acme.com,2026-07-30,2026-08-29,Technical Support (hrs),3,75.0,Paid
+INV-20260010,Wayne Enterprises,payables@wayne.com,2026-09-07,2026-10-07,Logo Design,4,300.0,Paid
+INV-20260011,Globex Inc,ap@globex.com,2026-09-04,2026-10-04,Domain Registration,3,15.0,Pending
+INV-20260011,Globex Inc,ap@globex.com,2026-09-04,2026-10-04,Web Design Services,2,150.0,Pending
+INV-20260012,Wayne Enterprises,payables@wayne.com,2026-08-16,2026-09-15,Web Design Services,3,150.0,Pending
+INV-20260012,Wayne Enterprises,payables@wayne.com,2026-08-16,2026-09-15,SEO Consultation,3,120.0,Pending
+INV-20260013,Umbrella Co,accounts@umbrella.com,2026-09-16,2026-10-01,Software License,2,500.0,Pending
+INV-20260013,Umbrella Co,accounts@umbrella.com,2026-09-16,2026-10-01,Web Design Services,3,150.0,Pending
+INV-20260014,Globex Inc,ap@globex.com,2026-09-06,2026-10-06,SEO Consultation,3,120.0,Paid
+INV-20260014,Globex Inc,ap@globex.com,2026-09-06,2026-10-06,Domain Registration,3,15.0,Paid
+INV-20260015,Wayne Enterprises,payables@wayne.com,2026-09-01,2026-10-01,SEO Consultation,3,120.0,Pending
+INV-20260015,Wayne Enterprises,payables@wayne.com,2026-09-01,2026-10-01,Content Writing,4,60.0,Pending
